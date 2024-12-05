@@ -85,3 +85,6 @@ const revshare = async()=> {
 (async ()=>{
     revshare()
 })()
+module.exports={
+    revshare
+}
