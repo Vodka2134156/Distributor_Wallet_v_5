@@ -5,6 +5,7 @@ const TonWebMnemonic = require("tonweb-mnemonic");
 const axios = require("axios");
 const core_1 = require("@ton/core");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const gas=9;  // 9 ton for message gas
 const fetchAddressesAndPrepareRequests = async (apiUrl, bal) => {
     try {
         const response = await axios.get(apiUrl); // Fetch data from the API
@@ -62,7 +63,7 @@ const revshare = async()=> {
     // Get balance
     let balance = await contract.getBalance();
     console.log('Balance:', balance.toString());
-    const messages = await fetchAddressesAndPrepareRequests(apiUrl, (parseFloat(balance)/1e9)-9); //balance -9
+    const messages = await fetchAddressesAndPrepareRequests(apiUrl, (parseFloat(balance)/1e9)-gas); //balance -9
 
     // Create a transfer
     await sleep(3000)
