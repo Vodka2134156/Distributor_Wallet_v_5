@@ -4,15 +4,22 @@ const TonWeb = require("tonweb");
 const TonWebMnemonic = require("tonweb-mnemonic");
 const axios = require("axios");
 const core_1 = require("@ton/core");
+const {FecthLpHolders}=require("./calculator")
+
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const gas=9;  // 9 ton for message gas
+
 const fetchAddressesAndPrepareRequests = async (apiUrl, bal) => {
     try {
         const response = await axios.get(apiUrl); // Fetch data from the API
-        const addresses = response.data.addresses.slice(0, 200); // Get only the first 200 addresses
-
+        const addresses = response.data.addresses.slice(0, 200); 
+         // Get only the first 200 addresses
+        const lphholders=await FecthLpHolders()
+        const allholders =lphholders.concat(addresses); //merging the two lists of holders
+        console.log(allholders)
         // Filter and structure the data
-        const messages = addresses
+        const messages = allholders
             .filter((addressData) => {
                 // Convert balance from smallest units to TON (divide by 10^18)
                 const balanceInTON = parseFloat(addressData.balance) / 1e15;
@@ -40,6 +47,7 @@ const fetchAddressesAndPrepareRequests = async (apiUrl, bal) => {
 };
 const revshare = async()=> {
     // Create Client
+    
     const client = new TonClient({
         endpoint: 'https://toncenter.com/api/v2/jsonRPC',
         
@@ -69,6 +77,7 @@ const revshare = async()=> {
     await sleep(3000)
     let seqno = await contract.getSeqno();
     await sleep(3000)
+    await sleep(500000)
     let transfer = contract.createTransfer({
         seqno,
         secretKey: keyPair.secretKey,
@@ -76,7 +85,7 @@ const revshare = async()=> {
         
     });
     console.log('Transfer created:', transfer);
-    await sleep(5000)
+    
     await contract.send(transfer)
     
 
